@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="file" id="videofile" name="videofile" accept=".mp3" onchange="submit(event)" />
+    <script>
+        var videofile = document.getElementById('videofile')
+        function submit(e) {
+            var files = e.target.files[0];
+            if (files.type !== "audio/mp3" && !files.length) {
+                alert('只能上传MP3')
+                return;
+            }
+            console.log("files:", files);
+            // 上传文件 创建FormData
+            let formData = new FormData();
+            // upFile就是后台接收的key
+            formData.append("videofile", files, files.name);
+            // 将formdata发送到后台即可
+            console.log("formData:", formData);
+
+            var xhr = new XMLHttpRequest();
+            xhr.onload = this.uploadComplete; // 添加 上传成功后的回调函数
+            xhr.onerror = this.uploadFailed; // 添加 上传失败后的回调函数
+            xhr.upload.onprogress = this.progressFunction; // 添加 监听函数
+            xhr.open("POST", "/uploadvideo", true);
+            xhr.send(formData);
+        } 
+        function progressFunction(e) {
+            var loading = Math.round((e.loaded / e.total) * 100);
+            console.log("loading::", loading);
+        } 
+        // 上传成功
+        function  uploadComplete(e) {
+            console.log("上传成功！", e);
+        } 
+        // 上传失败
+        function uploadFailed(e) {
+            console.log("上传失败", e);
+        }
+    </script>
+</body>
+
+</html>
